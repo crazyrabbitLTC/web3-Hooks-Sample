@@ -14,6 +14,7 @@ function App() {
 
   const [state, setAppState] = useState(initialState);
 
+  //setup web3
   useEffect(() => {
     const setup = async () => {
       const web3 = await getWeb3();
