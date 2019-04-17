@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import FrontPage from "./components/frontPage";
 import "./App.css";
-import createCurrentAccount$ from "@drizzle-utils/current-account-stream";
 
 const getWeb3 = require("@drizzle-utils/get-web3");
 const createDrizzleUtils = require("@drizzle-utils/core");
@@ -10,50 +9,63 @@ function App() {
   const initialState = {
     web3: null,
     drizzleUtils: null,
-    currentAccount: null
+    accounts: null
   };
 
   const [state, setAppState] = useState(initialState);
 
-  //setup web3
   useEffect(() => {
-    const setup = async () => {
+    const loadWeb3 = async () => {
       const web3 = await getWeb3();
-      const drizzleUtils = await createDrizzleUtils({ web3 });
+      setAppState({ ...state, web3 });
+    };
+    console.log(state);
 
-      setAppState({ ...state, web3, drizzleUtils });
+    if (!state.web3) {
+      loadWeb3();
+    }
+  });
+
+  useEffect(() => {
+    const setupDrizzleUtils = async () => {
+      const web3 = state.web3;
+      const drizzleUtils = await createDrizzleUtils({ web3 });
+      setAppState({ ...state, drizzleUtils });
     };
 
-    setup();
-  }, []);
+    if (state.web3) setupDrizzleUtils();
+  }, [state.web3]);
 
+  useEffect(() => {
+    const getAccounts = async () => {
+      const accounts = await state.drizzleUtils.getAccounts();
+      setAppState({ ...state, accounts });
+    };
 
+    if (state.drizzleUtils) getAccounts();
+  }, [state.drizzleUtils]);
 
   return <FrontPage />;
 }
 
 export default App;
 
-
-
-
 // Trying to subscribe to Accounts
 
+// useEffect(() => {
+//   const getAccounts = async () => {
+//     if (state.web3) {
+//       const web3 = await getWeb3();
+//       console.log(web3);
+//       const currentAccount$ = await createCurrentAccount$({web3});
+//       const unsubscribe = currentAccount$.subscribe(currentAccount => {
+//         console.log(currentAccount);
+//         setAppState({ ...state, currentAccount });
+//       });
 
-  // useEffect(() => {
-  //   const getAccounts = async () => {
-  //     if (state.web3) {
-  //       const web3 = await getWeb3();
-  //       console.log(web3);
-  //       const currentAccount$ = await createCurrentAccount$({web3});
-  //       const unsubscribe = currentAccount$.subscribe(currentAccount => {
-  //         console.log(currentAccount);
-  //         setAppState({ ...state, currentAccount });
-  //       });
+//       return unsubscribe;
+//     }
+//   };
 
-  //       return unsubscribe;
-  //     }
-  //   };
-
-  //   getAccounts();
-  // }, [state.web3]);
+//   getAccounts();
+// }, [state.web3]);
