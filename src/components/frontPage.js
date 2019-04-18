@@ -4,12 +4,13 @@ import "../App.css";
 
 function FrontPage(value) {
     console.log(`The value passed is: ${value}`);
+    console.dir(value);
     return(
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          The account: {value.accounts ? value.accounts[0] : "loading"}
         </p>
         <a
           className="App-link"

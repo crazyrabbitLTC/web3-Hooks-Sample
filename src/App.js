@@ -5,17 +5,18 @@ import "./App.css";
 const getWeb3 = require("@drizzle-utils/get-web3");
 const createDrizzleUtils = require("@drizzle-utils/core");
 
-const initialState = {
-  web3: null,
-  drizzleUtils: null,
-  accounts: null
-};
-const AppState = React.createContext(initialState);
+
 
 function App() {
+  const initialState = {
+    web3: null,
+    drizzleUtils: null,
+    accounts: null
+  };
 
-
+  
   const [state, setAppState] = useState(initialState);
+  const AppState = React.createContext(state);
  
 
   useEffect(() => {
