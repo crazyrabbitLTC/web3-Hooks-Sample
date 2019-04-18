@@ -5,6 +5,7 @@ import "./App.css";
 const getWeb3 = require("@drizzle-utils/get-web3");
 const createDrizzleUtils = require("@drizzle-utils/core");
 
+
 function App() {
   const initialState = {
     web3: null,
@@ -13,7 +14,7 @@ function App() {
   };
 
   const [state, setAppState] = useState(initialState);
-  const AppState = React.createContext(initialState);
+  const AppState = React.createContext(state);
 
   useEffect(() => {
     const loadWeb3 = async () => {
@@ -45,8 +46,8 @@ function App() {
   }, [state.drizzleUtils]);
 
   return (
-    <AppState.Consumer value={state}>
-      {value => <FrontPage />}
+    <AppState.Consumer>
+      {value => <FrontPage state={value}/>}
     </AppState.Consumer>
   );
 }

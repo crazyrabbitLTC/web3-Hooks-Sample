@@ -2,15 +2,16 @@ import React from "react";
 import logo from "../logo.svg";
 import "../App.css";
 
-function FrontPage(value) {
-    console.log(`The value passed is: ${value}`);
-    console.dir(value);
+
+function FrontPage(props) {
+    //console.log(`The value passed is: ${value}`);
+  const {web3, drizzleUtils, accounts} = props.state;
     return(
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          The account: {value.accounts ? value.accounts[0] : "loading"}
+          The account: {accounts ? accounts[0] : "loading"}
         </p>
         <a
           className="App-link"
