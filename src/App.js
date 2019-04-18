@@ -10,7 +10,8 @@ function App() {
     drizzleUtils: null,
     accounts: null,
     networks: null,
-    providerType: null
+    providerType: null,
+    autoRefresh: false
   };
 
   const [state, setAppState] = useState(initialState);
@@ -37,16 +38,16 @@ function App() {
   }, [state.web3]);
 
   useEffect(() => {
-    let subscription;
     const getAccounts = async () => {
       const accounts = await state.drizzleUtils.getAccounts();
-      window.ethereum.autoRefreshOnNetworkChange = false;
-      subscription = window.ethereum.on("accountsChanged", accounts => {
-        console.log("Account has changed");
-        console.log(accounts);
-        setAppState({ ...state, accounts });
-        return subscription;
-      });
+
+      if (!state.autoRefresh) {
+        window.ethereum.autoRefreshOnNetworkChange = false;
+        const subscription = window.ethereum.on("accountsChanged", accounts => {
+          setAppState({ ...state, accounts });
+          return subscription;
+        });
+      }
 
       setAppState({ ...state, accounts });
     };
