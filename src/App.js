@@ -42,13 +42,13 @@ function App() {
     loadWeb3();
   }, [state.networkId, state.appReady]);
 
+  //not sure if I need to actually return the subscription cleanup here...
   useEffect(() => {
     const subscribeToNetworkChange = async () => {
       if (!state.autoRefresh) {
         window.ethereum.autoRefreshOnNetworkChange = false;
-        const subscription = window.ethereum.on("networkChanged", networkId => {
+        window.ethereum.on("networkChanged", networkId => {
           setAppState({ ...state, networkId, appReady: false });
-          return subscription;
         });
       }
     };
@@ -60,9 +60,8 @@ function App() {
     const subscribeToAccountsChange = async () => {
       if (!state.autoRefresh) {
         window.ethereum.autoRefreshOnNetworkChange = false;
-        const subscription = window.ethereum.on("accountsChanged", accounts => {
+        window.ethereum.on("accountsChanged", accounts => {
           setAppState({ ...state, accounts, appReady: false });
-          return subscription;
         });
       }
     };
