@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import FrontPage from "./components/frontPage";
 import "./App.css";
-
 const getWeb3 = require("@drizzle-utils/get-web3");
 const createDrizzleUtils = require("@drizzle-utils/core");
-
 
 function App() {
   const initialState = {
     web3: null,
     drizzleUtils: null,
-    accounts: null
+    accounts: null,
+    networks: null,
+    providerType: null
   };
 
   const [state, setAppState] = useState(initialState);
@@ -45,9 +45,30 @@ function App() {
     if (state.drizzleUtils) getAccounts();
   }, [state.drizzleUtils]);
 
+  useEffect(() => {
+    const setProviderType = async () => {
+      const metamask = window.ethereum.isMetaMask;
+      console.log(`Is metaMask installed? : ${metamask}`);
+      setAppState({ ...state, providerType: "metamask" });
+    };
+
+    if (state.drizzleUtils) setProviderType();
+
+  }, [state.accounts])
+
+  useEffect(() => {
+    const subscribeToNetworkChanges = async () => {
+
+    };
+
+    if (state.drizzleUtils) subscribeToNetworkChanges();
+  }, [state.drizzleUtils]);
+
+
+
   return (
     <AppState.Consumer>
-      {value => <FrontPage state={value}/>}
+      {value => <FrontPage state={value} />}
     </AppState.Consumer>
   );
 }
