@@ -11,7 +11,8 @@ function App() {
     accounts: null,
     provider: null,
     networkId: null,
-    autoRefresh: false
+    autoRefresh: false,
+    appReady: false
   };
 
   const [state, setAppState] = useState(initialState);
@@ -20,64 +21,54 @@ function App() {
   useEffect(() => {
     const loadWeb3 = async () => {
       const web3 = await getWeb3();
-      setAppState({ ...state, web3 });
+      const drizzleUtils = await createDrizzleUtils({ web3 });
+      const provider = web3.currentProvider;
+      const networkId = window.ethereum.networkVersion;
+      const accounts = await drizzleUtils.getAccounts();
+
+      setAppState({
+        ...state,
+        web3,
+        drizzleUtils,
+        provider,
+        networkId,
+        accounts,
+        appReady: true
+      });
     };
+
     console.log(state);
 
-    if (!state.web3) loadWeb3();
-  });
+    loadWeb3();
+  }, [state.networkId, state.appReady]);
 
   useEffect(() => {
-    const setupDrizzleUtils = async () => {
-      const web3 = state.web3;
-      const drizzleUtils = await createDrizzleUtils({ web3 });
-      setAppState({ ...state, drizzleUtils });
-    };
-
-    if (state.web3) setupDrizzleUtils();
-  }, [state.web3]);
-
-  useEffect(() => {
-    const getProviders = async () => {
-      const provider = state.web3.currentProvider;
-      console.dir(provider);
-      const networkId = window.ethereum.networkVersion;
-      setAppState({ ...state, provider, networkId });
-
-
+    const subscribeToNetworkChange = async () => {
       if (!state.autoRefresh) {
         window.ethereum.autoRefreshOnNetworkChange = false;
         const subscription = window.ethereum.on("networkChanged", networkId => {
-          setAppState({...state, networkId});
+          setAppState({ ...state, networkId, appReady: false });
           return subscription;
         });
       }
-
     };
 
-    if (state.drizzleUtils) getProviders();
-  }, [state.accounts]);
+    if (state.drizzleUtils) subscribeToNetworkChange();
+  });
 
   useEffect(() => {
-    const getAccounts = async () => {
-      const accounts = await state.drizzleUtils.getAccounts();
-
+    const subscribeToAccountsChange = async () => {
       if (!state.autoRefresh) {
         window.ethereum.autoRefreshOnNetworkChange = false;
         const subscription = window.ethereum.on("accountsChanged", accounts => {
-          setAppState({ ...state, accounts });
+          setAppState({ ...state, accounts, appReady: false });
           return subscription;
         });
       }
-
-      setAppState({ ...state, accounts });
     };
 
-    if (state.drizzleUtils) getAccounts();
-  }, [state.drizzleUtils]);
-
-
-
+    if (state.drizzleUtils) subscribeToAccountsChange();
+  });
 
   return (
     <AppState.Consumer>

@@ -5,13 +5,14 @@ import "../App.css";
 
 function FrontPage(props) {
     //console.log(`The value passed is: ${value}`);
-  const {web3, drizzleUtils, accounts} = props.state;
+  const {accounts, networkId, appReady} = props.state;
     return(
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          The account: {accounts ? accounts[0] : "loading"}
+          The account: {appReady ? accounts[0] : "loading"}<br/>
+          The Network: {appReady ? networkId : "loading"}
         </p>
         <a
           className="App-link"
