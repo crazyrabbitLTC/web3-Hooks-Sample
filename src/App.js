@@ -16,7 +16,7 @@ function App() {
 
   
   const [state, setAppState] = useState(initialState);
-  const AppState = React.createContext(state);
+  const AppState = React.createContext(initialState);
  
 
   useEffect(() => {
