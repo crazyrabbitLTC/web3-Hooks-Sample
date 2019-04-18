@@ -9,8 +9,7 @@ function App() {
     web3: null,
     drizzleUtils: null,
     accounts: null,
-    networks: null,
-    providerType: null,
+    network: null,
     autoRefresh: false
   };
 
@@ -37,6 +36,16 @@ function App() {
     if (state.web3) setupDrizzleUtils();
   }, [state.web3]);
 
+  useEffect(()=> {
+    const getNetworks = async () => {
+      const network = state.web3.currentProvider;
+      console.dir(network);
+      setAppState({...state, network});
+    }
+
+    if(state.drizzleUtils) getNetworks();
+  },[state.accounts]);
+
   useEffect(() => {
     const getAccounts = async () => {
       const accounts = await state.drizzleUtils.getAccounts();
@@ -54,16 +63,6 @@ function App() {
 
     if (state.drizzleUtils) getAccounts();
   }, [state.drizzleUtils]);
-
-  useEffect(() => {
-    const setProviderType = async () => {
-      const metamask = window.ethereum.isMetaMask;
-      console.log(`Is metaMask installed? : ${metamask}`);
-      setAppState({ ...state, providerType: "metamask" });
-    };
-
-    if (state.drizzleUtils) setProviderType();
-  }, [state.accounts]);
 
   return (
     <AppState.Consumer>
