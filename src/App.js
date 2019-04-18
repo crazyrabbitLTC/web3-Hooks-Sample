@@ -37,8 +37,17 @@ function App() {
   }, [state.web3]);
 
   useEffect(() => {
+    let subscription;
     const getAccounts = async () => {
       const accounts = await state.drizzleUtils.getAccounts();
+      window.ethereum.autoRefreshOnNetworkChange = false;
+      subscription = window.ethereum.on("accountsChanged", accounts => {
+        console.log("Account has changed");
+        console.log(accounts);
+        setAppState({ ...state, accounts });
+        return subscription;
+      });
+
       setAppState({ ...state, accounts });
     };
 
@@ -53,18 +62,7 @@ function App() {
     };
 
     if (state.drizzleUtils) setProviderType();
-
-  }, [state.accounts])
-
-  useEffect(() => {
-    const subscribeToNetworkChanges = async () => {
-
-    };
-
-    if (state.drizzleUtils) subscribeToNetworkChanges();
-  }, [state.drizzleUtils]);
-
-
+  }, [state.accounts]);
 
   return (
     <AppState.Consumer>
