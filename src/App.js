@@ -9,7 +9,8 @@ function App() {
     web3: null,
     drizzleUtils: null,
     accounts: null,
-    network: null,
+    provider: null,
+    networkId: null,
     autoRefresh: false
   };
 
@@ -36,15 +37,26 @@ function App() {
     if (state.web3) setupDrizzleUtils();
   }, [state.web3]);
 
-  useEffect(()=> {
-    const getNetworks = async () => {
-      const network = state.web3.currentProvider;
-      console.dir(network);
-      setAppState({...state, network});
-    }
+  useEffect(() => {
+    const getProviders = async () => {
+      const provider = state.web3.currentProvider;
+      console.dir(provider);
+      const networkId = window.ethereum.networkVersion;
+      setAppState({ ...state, provider, networkId });
 
-    if(state.drizzleUtils) getNetworks();
-  },[state.accounts]);
+
+      if (!state.autoRefresh) {
+        window.ethereum.autoRefreshOnNetworkChange = false;
+        const subscription = window.ethereum.on("networkChanged", networkId => {
+          setAppState({...state, networkId});
+          return subscription;
+        });
+      }
+
+    };
+
+    if (state.drizzleUtils) getProviders();
+  }, [state.accounts]);
 
   useEffect(() => {
     const getAccounts = async () => {
@@ -64,6 +76,9 @@ function App() {
     if (state.drizzleUtils) getAccounts();
   }, [state.drizzleUtils]);
 
+
+
+
   return (
     <AppState.Consumer>
       {value => <FrontPage state={value} />}
@@ -72,23 +87,3 @@ function App() {
 }
 
 export default App;
-
-// Trying to subscribe to Accounts
-
-// useEffect(() => {
-//   const getAccounts = async () => {
-//     if (state.web3) {
-//       const web3 = await getWeb3();
-//       console.log(web3);
-//       const currentAccount$ = await createCurrentAccount$({web3});
-//       const unsubscribe = currentAccount$.subscribe(currentAccount => {
-//         console.log(currentAccount);
-//         setAppState({ ...state, currentAccount });
-//       });
-
-//       return unsubscribe;
-//     }
-//   };
-
-//   getAccounts();
-// }, [state.web3]);
