@@ -2,7 +2,8 @@ import React from "react";
 import logo from "../logo.svg";
 import "../App.css";
 
-function FrontPage() {
+function FrontPage(value) {
+    console.log(`The value passed is: ${value}`);
     return(
     <div className="App">
       <header className="App-header">
