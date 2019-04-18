@@ -53,7 +53,7 @@ function App() {
       }
     };
 
-    if (state.drizzleUtils) subscribeToNetworkChange();
+    if (window.ethereum) subscribeToNetworkChange();
   });
 
   useEffect(() => {
@@ -67,7 +67,7 @@ function App() {
       }
     };
 
-    if (state.drizzleUtils) subscribeToAccountsChange();
+    if (window.ethereum) subscribeToAccountsChange();
   });
 
   return (
